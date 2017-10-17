@@ -10,7 +10,7 @@ A tera-proxy module. Automatically logs in to all characters and uses "Vial of E
 
 `/proxy autovials` or `/8 autovials` to enable or disable the module.
 
-To stop it you should cancel the return to character selection and run the command afterwards.
+To interrupt it before it's finished, you should cancel the return to character selection and run the command afterwards.
 
 ### Additional Information
 
