@@ -50,30 +50,36 @@ module.exports = function autoVials(dispatch) {
 		}
 	});
 	
-	dispatch.hook('S_RETURN_TO_LOBBY', 1, (event) => {
+	dispatch.hook('S_RETURN_TO_LOBBY', 1, () => {
 		cooldown = false;
 		itemId = null;
 		itemAmount = null;
 		clearTimeout(cdTimer);
 	});
 	
-	dispatch.hook('C_SELECT_USER', 1, (event) => {
+	dispatch.hook('C_SELECT_USER', 1, () => {
 		if(enabled || returnToChar) {
 			return false;
 		}
 	});
 	
-	dispatch.hook('C_CANCEL_RETURN_TO_LOBBY', 1, (event) => {
+	dispatch.hook('C_CANCEL_RETURN_TO_LOBBY', 1, () => {
 		if(!enabled && returnToChar) {
 			returnToChar = null;
 			command.message('Interrupted return to the starting character.');
 		}
 	});
 	
+	dispatch.hook('C_LOAD_TOPO_FIN', 1, () => {
+		if(enabled) {
+			setTimeout(useVial, ACTION_DELAY);
+		}
+	});
+	
 	dispatch.hook('S_GET_USER_LIST', 5, (event) => {
 		if(!charSelectTimer) {
 			chars = event.characters;
-		
+			
 			if(enabled) {
 				for(i = 0; i < chars.length; i++) {
 					if(charsUsed.indexOf(chars[i].id) == -1) {
@@ -83,10 +89,6 @@ module.exports = function autoVials(dispatch) {
 							dispatch.toServer('C_SELECT_USER', 1, {
 								id: charid,
 								unk: 0
-							});
-							
-							dispatch.hookOnce('C_PLAYER_LOCATION', 1, (event) => {
-								setTimeout(useVial, ACTION_DELAY);
 							});
 							
 							charSelectTimer = null;
