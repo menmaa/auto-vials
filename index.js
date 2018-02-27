@@ -1,13 +1,8 @@
 const Command = require('command');
-const { protocol } = require('tera-data-parser');
 
 const VIAL_ID = 182433;							// Vial of Elinu's Tears ID
 const ACTION_DELAY = 1000;						// Delay between different actions in milliseconds
 const CHAR_SELECT_DELAY = 10000;				// Delay between retrieving the character list and selecting the character in milliseconds
-
-if(!protocol.messages.has('C_CANCEL_RETURN_TO_LOBBY')) {
-	protocol.messages.set('C_CANCEL_RETURN_TO_LOBBY', new Map().set(1, []));
-}
 
 module.exports = function autoVials(dispatch) {
 	
@@ -15,7 +10,7 @@ module.exports = function autoVials(dispatch) {
 	
 	let enabled = false,
 		cooldown = false,
-		cid = null,
+		gameId = null,
 		playerId = null,
 		itemId = null,
 		itemAmount = null,
@@ -26,17 +21,16 @@ module.exports = function autoVials(dispatch) {
 		charSelectTimer = null
 		
 		
-	dispatch.hook('S_LOGIN', 4, (event) => {
-		({cid} = event);
-		({playerId} = event);
+	dispatch.hook('S_LOGIN', 9, (event) => {
+		({gameId, playerId} = event);
 	});
 	
-	dispatch.hook('S_INVEN', 9, (event) => {
+	dispatch.hook('S_INVEN', 11, (event) => {
 		let invenList = event.items;
 		
 		for(i = 0; i < invenList.length; i++) {
 			if(invenList[i].dbid == VIAL_ID) {
-				itemId = invenList[i].id.low;
+				itemId = invenList[i].id;
 				itemAmount = invenList[i].amount;
 				break;
 			}
@@ -50,33 +44,33 @@ module.exports = function autoVials(dispatch) {
 		}
 	});
 	
-	dispatch.hook('S_RETURN_TO_LOBBY', 1, () => {
+	dispatch.hook('S_RETURN_TO_LOBBY', 'raw', () => {
 		cooldown = false;
 		itemId = null;
 		itemAmount = null;
 		clearTimeout(cdTimer);
 	});
 	
-	dispatch.hook('C_SELECT_USER', 1, () => {
+	dispatch.hook('C_SELECT_USER', 'raw', () => {
 		if(enabled || returnToChar) {
 			return false;
 		}
 	});
 	
-	dispatch.hook('C_CANCEL_RETURN_TO_LOBBY', 1, () => {
+	dispatch.hook('C_CANCEL_RETURN_TO_LOBBY', 'raw', () => {
 		if(!enabled && returnToChar) {
 			returnToChar = null;
 			command.message('Interrupted return to the starting character.');
 		}
 	});
 	
-	dispatch.hook('C_LOAD_TOPO_FIN', 1, () => {
+	dispatch.hook('C_LOAD_TOPO_FIN', 'raw', () => {
 		if(enabled) {
 			setTimeout(useVial, ACTION_DELAY);
 		}
 	});
 	
-	dispatch.hook('S_GET_USER_LIST', 5, (event) => {
+	dispatch.hook('S_GET_USER_LIST', 11, (event) => {
 		if(!charSelectTimer) {
 			chars = event.characters;
 			
@@ -127,25 +121,23 @@ module.exports = function autoVials(dispatch) {
 	
 	function useVial() {
 		if(!cooldown && itemAmount > 0) {
-			dispatch.toServer('C_USE_ITEM', 1, {
-				ownerId: cid,
-				item: VIAL_ID,
-				id: itemId,
-				unk1: 0,
-				unk2: 0,
-				unk3: 0,
-				unk4: 1,
-				unk5: 0,
-				unk6: 0,
-				unk7: 0,
+			dispatch.toServer('C_USE_ITEM', 2, {
+				ownerId: gameId,
+				id: VIAL_ID,
+				uniqueId: itemId,
+				targetId: 0,
+				amount: 1,
+				targetX: 0,
+				targetY: 0,
+				targetZ: 0,
 				x: 0,
 				y: 0,
 				z: 0,
 				w: 0,
-				unk8: 0,
-				unk9: 0,
-				unk10: 0,
-				unk11: 0
+				unk1: 0,
+				unk2: 0,
+				unk3: 0,
+				unk4: 0
 			});
 			command.message('Vial of Elinu\'s Tears used.');
 		}
