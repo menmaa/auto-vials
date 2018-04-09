@@ -25,12 +25,12 @@ module.exports = function autoVials(dispatch) {
 		({gameId, playerId} = event);
 	});
 	
-	dispatch.hook('S_INVEN', 11, (event) => {
+	dispatch.hook('S_INVEN', 12, (event) => {
 		let invenList = event.items;
 		
 		for(i = 0; i < invenList.length; i++) {
-			if(invenList[i].dbid == VIAL_ID) {
-				itemId = invenList[i].id;
+			if(invenList[i].id == VIAL_ID) {
+				itemId = invenList[i].dbid;
 				itemAmount = invenList[i].amount;
 				break;
 			}
@@ -60,7 +60,7 @@ module.exports = function autoVials(dispatch) {
 	dispatch.hook('C_CANCEL_RETURN_TO_LOBBY', 'raw', () => {
 		if(!enabled && returnToChar) {
 			returnToChar = null;
-			command.message('Interrupted return to the starting character.');
+			command.message('[Auto Vials] Interrupted return to the starting character.');
 		}
 	});
 	
@@ -70,7 +70,7 @@ module.exports = function autoVials(dispatch) {
 		}
 	});
 	
-	dispatch.hook('S_GET_USER_LIST', 11, (event) => {
+	dispatch.hook('S_GET_USER_LIST', 13, (event) => {
 		if(!charSelectTimer) {
 			chars = event.characters;
 			
@@ -84,11 +84,10 @@ module.exports = function autoVials(dispatch) {
 								id: charid,
 								unk: 0
 							});
-							
 							charSelectTimer = null;
 						}, CHAR_SELECT_DELAY);
 						
-						console.log(`[Auto Vials] Next character selected: ${chars[i].name} (ID: ${chars[i].id})`);
+						console.log(`[Auto Vials] Next character selected: ${chars[i].name}`);
 						break;
 					}
 				}
@@ -110,7 +109,7 @@ module.exports = function autoVials(dispatch) {
 		if(!enabled) {
 			enabled = true;
 			returnToChar = playerId;
-			command.message('Auto Vials enabled.');
+			command.message('[Auto Vials] Auto Vials enabled.');
 			console.log(`[Auto Vials] Auto Vials enabled.`);
 			useVial();
 		} else {
@@ -139,17 +138,17 @@ module.exports = function autoVials(dispatch) {
 				unk3: 0,
 				unk4: 0
 			});
-			command.message('Vial of Elinu\'s Tears used.');
+			command.message('[Auto Vials] Vial of Elinu\'s Tears used.');
 		}
 		charsUsed.push(playerId);
 		
 		if(chars.length > charsUsed.length) {
-			command.message('Switching characters...');
+			command.message('[Auto Vials] Switching characters...');
 			setTimeout(returnToLobby, ACTION_DELAY);
 		} else {
 			disableAutoVial();
 			setTimeout(returnToLobby, ACTION_DELAY);
-			command.message('Returning to the starting character...');
+			command.message('[Auto Vials] Returning to the starting character...');
 		}
 	}
 	
@@ -160,7 +159,7 @@ module.exports = function autoVials(dispatch) {
 	function disableAutoVial() {
 		enabled = false;
 		charsUsed = [];
-		command.message('Auto Vials disabled.');
+		command.message('[Auto Vials] Auto Vials disabled.');
 		console.log(`[Auto Vials] Auto Vials disabled.`);
 	}
 }

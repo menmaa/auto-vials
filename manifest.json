@@ -1,0 +1,14 @@
+{
+	"files": {
+		"index.js": "50568d24aaa684d529d35da555c0632aa70350d66436d466b1aab643c0d65ab4",
+		"module.json": "7499a77fb4abb480ad4f72a59424684497d32a263cfa1c90fb2a6ecb1cb5470f"
+	},
+	"defs": {
+		"S_LOGIN": 9,
+		"S_INVEN": 12,
+		"S_START_COOLTIME_ITEM": 1,
+		"S_GET_USER_LIST": 13,
+		"C_USE_ITEM": 2,
+		"C_RETURN_TO_LOBBY": 1
+	}
+}
