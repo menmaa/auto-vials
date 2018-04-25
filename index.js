@@ -21,7 +21,7 @@ module.exports = function autoVials(dispatch) {
 		charSelectTimer = null
 		
 		
-	dispatch.hook('S_LOGIN', 9, (event) => {
+	dispatch.hook('S_LOGIN', 10, (event) => {
 		({gameId, playerId} = event);
 	});
 	
@@ -70,7 +70,7 @@ module.exports = function autoVials(dispatch) {
 		}
 	});
 	
-	dispatch.hook('S_GET_USER_LIST', 13, (event) => {
+	dispatch.hook('S_GET_USER_LIST', 14, (event) => {
 		if(!charSelectTimer) {
 			chars = event.characters;
 			
