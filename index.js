@@ -25,7 +25,7 @@ module.exports = function autoVials(dispatch) {
 		({gameId, playerId} = event);
 	});
 	
-	dispatch.hook('S_INVEN', 12, (event) => {
+	dispatch.hook('S_INVEN', 16, (event) => {
 		let invenList = event.items;
 		
 		for(i = 0; i < invenList.length; i++) {
