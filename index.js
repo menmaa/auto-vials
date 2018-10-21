@@ -120,23 +120,11 @@ module.exports = function autoVials(dispatch) {
 	
 	function useVial() {
 		if(!cooldown && itemAmount > 0) {
-			dispatch.toServer('C_USE_ITEM', 2, {
-				ownerId: gameId,
+			dispatch.toServer('C_USE_ITEM', 3, {
+				gameId,
 				id: VIAL_ID,
-				uniqueId: itemId,
-				targetId: 0,
-				amount: 1,
-				targetX: 0,
-				targetY: 0,
-				targetZ: 0,
-				x: 0,
-				y: 0,
-				z: 0,
-				w: 0,
-				unk1: 0,
-				unk2: 0,
-				unk3: 0,
-				unk4: 0
+				dbid: itemId,
+				amount: 1
 			});
 			command.message('[Auto Vials] Vial of Elinu\'s Tears used.');
 		}
